@@ -60,9 +60,10 @@ class ExerciseTrackerGUI:
             frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
             results = self.tracker.track(frame)
             image = Image.fromarray(results)
-            image = ImageTk.PhotoImage(image=image)
+            image = ImageTk.PhotoImage(image=image.resize((1280, 960)))
             self.video_label.configure(image=image)
             self.video_label.image = image
+
             if self.tracker_running:
                 self.root.after(10, self.track)
         else:
