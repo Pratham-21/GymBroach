@@ -5,7 +5,6 @@ import tkinter as tk
 from tkinter import ttk
 from PIL import Image, ImageTk
 
-
 class ExerciseTrackerGUI:
     def __init__(self, root):
         self.root = root
@@ -13,11 +12,11 @@ class ExerciseTrackerGUI:
 
         self.mp_drawing = mp.solutions.drawing_utils
         self.mp_pose = mp.solutions.pose
-        self.cap = cv2.VideoCapture(1)
+        self.cap = cv2.VideoCapture(0)
         self.tracker = None
         self.tracker_running = False
 
-        self.exercise_options = ["Bicep Curls", "Pushups", "Overhead Press", "Squats"]
+        self.exercise_options = ["Bicep Curls", "Pushups", "Squats"]
         self.selected_exercise = tk.StringVar()
         self.selected_exercise.set(self.exercise_options[0])
 
@@ -46,8 +45,6 @@ class ExerciseTrackerGUI:
                 self.tracker = ExerciseTracker(self.cap, self.mp_drawing, self.mp_pose, "bicep_curls")
             elif exercise == "Pushups":
                 self.tracker = ExerciseTracker(self.cap, self.mp_drawing, self.mp_pose, "pushups")
-            elif exercise == "Overhead Press":
-                self.tracker = ExerciseTracker(self.cap, self.mp_drawing, self.mp_pose, "overhead_press")
             elif exercise == "Squats":
                 self.tracker = ExerciseTracker(self.cap, self.mp_drawing, self.mp_pose, "squats")
 
@@ -112,6 +109,7 @@ class ExerciseTracker:
                 wrist = [landmarks[self.mp_pose.PoseLandmark.LEFT_WRIST.value].x,
                          landmarks[self.mp_pose.PoseLandmark.LEFT_WRIST.value].y]
                 angle = self.calculate_angle(shoulder, elbow, wrist)
+
             elif self.exercise_type == "pushups":
                 shoulder = [landmarks[self.mp_pose.PoseLandmark.LEFT_SHOULDER.value].x,
                             landmarks[self.mp_pose.PoseLandmark.LEFT_SHOULDER.value].y]
@@ -121,9 +119,7 @@ class ExerciseTracker:
                          landmarks[self.mp_pose.PoseLandmark.LEFT_WRIST.value].y]
                 angle = self.calculate_angle(shoulder, elbow, wrist)
 
-            elif self.exercise_type == "overhead_press":
-                # Add overhead press tracking logic here
-                pass
+
             elif self.exercise_type == "squats":
                 left_hip = [landmarks[self.mp_pose.PoseLandmark.LEFT_HIP.value].x,
                             landmarks[self.mp_pose.PoseLandmark.LEFT_HIP.value].y]
@@ -152,17 +148,17 @@ class ExerciseTracker:
             else:
                 cv2.putText(image, str(f"{angle:.2f}"),
                             tuple(np.multiply(elbow, [640, 480]).astype(int)),
-                            cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255,255,0), 2, cv2.LINE_AA)
+                            cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 0), 2, cv2.LINE_AA)
 
             if self.exercise_type == "squats":
-                if left_leg_angle < 75 and right_leg_angle < 75:
-                    self.stage = "down"
-                    self.warning = None
-                if (left_leg_angle > 170 or right_leg_angle > 170) and self.stage == 'down':
+                if left_leg_angle > 170 or right_leg_angle > 170 :
                     self.stage = "up"
+                    self.warning = None
+                if (left_leg_angle < 75 and right_leg_angle < 75) and self.stage == 'up':
+                    self.stage = "down"
                     self.counter += 1
                     print(self.counter)
-                if left_leg_angle in range(75,170) and right_leg_angle in range(75,170):
+                if left_leg_angle<110 and right_leg_angle<110:
                     self.warning = "Half Rep Warning"
             elif self.exercise_type == "bicep_curls":
                 if angle > 160:
