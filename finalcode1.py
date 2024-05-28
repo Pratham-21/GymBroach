@@ -141,14 +141,14 @@ class ExerciseTracker:
             if self.exercise_type == "squats":
                 cv2.putText(image, str(f"{left_leg_angle:.2f}"),
                             tuple(np.multiply(left_knee, [640, 480]).astype(int)),
-                            cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 2, cv2.LINE_AA)
+                            cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2, cv2.LINE_AA)
                 cv2.putText(image, str(f"{right_leg_angle:.2f}"),
                             tuple(np.multiply(right_knee, [640, 480]).astype(int)),
-                            cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 2, cv2.LINE_AA)
+                            cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2, cv2.LINE_AA)
             else:
                 cv2.putText(image, str(f"{angle:.2f}"),
                             tuple(np.multiply(elbow, [640, 480]).astype(int)),
-                            cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 0), 2, cv2.LINE_AA)
+                            cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2, cv2.LINE_AA)
 
             if self.exercise_type == "squats":
                 if left_leg_angle > 170 or right_leg_angle > 170 :
@@ -172,10 +172,10 @@ class ExerciseTracker:
                     self.warning = "Half Rep Warning"
             else:
                 if angle > 160:
-                    self.stage = "down"
-                    self.warning = None
-                if angle < 30 and self.stage == 'down':
                     self.stage = "up"
+                    self.warning = None
+                if angle < 65 and self.stage == 'up':
+                    self.stage = "down"
                     self.counter += 1
                     print(self.counter)
                 if angle < 90:
